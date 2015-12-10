@@ -19,4 +19,4 @@ export DATA_OSM_OSRM=$(find /opt/osrm/data/ -type f -name '*.osrm')
 
 ./osrm-prepare $DATA_OSM_OSRM
 
-./osrm-routed $DATA_OSM_OSRM --max-table-size=2000
+./osrm-routed $DATA_OSM_OSRM --shared-memoyr=yes --max-table-size=2000
