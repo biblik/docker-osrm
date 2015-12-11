@@ -17,6 +17,8 @@ ln -s ../profiles/lib/
 
 export DATA_OSM_OSRM=$(find /opt/osrm/data/ -type f -name '*.osrm')
 
+echo $DATA_OSM_OSRM
+
 ./osrm-prepare $DATA_OSM_OSRM
 
-./osrm-routed $DATA_OSM_OSRM --shared-memory=yes --max-table-size=2000
+./osrm-routed $DATA_OSM_OSRM --max-table-size=2000
