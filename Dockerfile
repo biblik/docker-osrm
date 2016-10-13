@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 
 MAINTAINER biblik <axel.grimault@gmail.com>
 
@@ -8,20 +8,19 @@ RUN apt-get -y update
 # INSTALL REQUIRED PACKAGES FOR OSRM-BACKEND
 RUN apt-get -y install build-essential git cmake pkg-config
 RUN apt-get -y install libbz2-dev libzip-dev libxml2-dev
-RUN apt-get -y install libstxxl-dev libstxxl-doc libstxxl1 
+RUN apt-get -y install libstxxl-dev libstxxl1v5 
 RUN apt-get -y install libboost-all-dev
-RUN apt-get -y install lua5.1 liblua5.1-0-dev libluabind-dev libluajit-5.1-dev
-RUN apt-get -y install libtbb-dev
+RUN apt-get -y install lua5.2 libluabind-dev libtbb-dev
 
 # INSTALL OSRM-BACKEND
 WORKDIR /opt/osrm
 RUN git clone https://github.com/Project-OSRM/osrm-backend.git
 WORKDIR /opt/osrm/osrm-backend
-RUN git checkout master
 RUN mkdir -p build
 WORKDIR /opt/osrm/osrm-backend/build
-RUN cmake ..
-RUN make
+RUN cmake .. -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build .
+RUN cmake --build . --target install
 
 # PREPARE PROFILE DIRECTORY
 WORKDIR /opt/osrm/

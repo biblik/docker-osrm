@@ -13,12 +13,12 @@ cd /opt/osrm/osrm-backend/build
 ln -s $PROFILE_LUA profile.lua
 ln -s ../profiles/lib/
 
-./osrm-extract $DATA_OSM_PBF
+./osrm-extract -p profile.lua $DATA_OSM_PBF
 
 export DATA_OSM_OSRM=$(find /opt/osrm/data/ -type f -name '*.osrm')
 
 echo $DATA_OSM_OSRM
 
-./osrm-prepare $DATA_OSM_OSRM
+./osrm-contract $DATA_OSM_OSRM
 
 ./osrm-routed $DATA_OSM_OSRM --max-table-size=2000
