@@ -10,7 +10,7 @@ access_tag_whitelist = { ["yes"] = true, ["motorcar"] = true, ["motor_vehicle"] 
 access_tag_blacklist = { ["no"] = true, ["private"] = true, ["agricultural"] = true, ["forestry"] = true, ["emergency"] = true, ["psv"] = true, ["delivery"] = true }
 access_tag_restricted = { ["destination"] = true, ["delivery"] = true }
 access_tags_hierarchy = { "motorcar", "motor_vehicle", "vehicle", "access" }
-service_tag_restricted = { ["parking_aisle"] = true }
+service_tag_restricted = { ["parking_aisle"] = true, ["parking"] = true }
 service_tag_forbidden = { ["emergency_access"] = true }
 restrictions = { "motorcar", "motor_vehicle", "vehicle" }
 
@@ -42,7 +42,10 @@ speed_profile = {
 -- service speeds
 service_speeds = {
   ["alley"] = 5,
-  ["parking_aisle"] = 5
+  ["parking"] = 5,
+  ["parking_aisle"] = 5,
+  ["driveway"] = 5,
+  ["drive-through"] = 5
 }
 
 -- surface/trackype/smoothness
@@ -144,6 +147,7 @@ maxspeed_table = {
 -- set profile properties
 properties.u_turn_penalty                  = 20
 properties.traffic_signal_penalty          = 2
+properties.max_speed_for_map_matching      = 180/3.6 -- 180kmph -> m/s
 properties.use_turn_restrictions           = true
 properties.continue_straight_at_waypoint   = true
 properties.left_hand_driving               = false
@@ -258,7 +262,9 @@ function way_function (way, result)
     -- also respect user-preference for HOV-only ways when all lanes are HOV-designated
     local function has_all_designated_hov_lanes(lanes)
       local all = true
-      for lane in lanes:gmatch("(%w+)") do
+      -- This gmatch call effectively splits the string on | chars.
+      -- we append an extra | to the end so that we can match the final part
+      for lane in (lanes .. '|'):gmatch("([^|]*)|") do
         if lane and lane ~= "designated" then
           all = false
           break
@@ -422,7 +428,7 @@ function way_function (way, result)
   end
 
   -- set the road classification based on guidance globals configuration
-  set_classification(highway,result)
+  set_classification(highway,result,way)
 
   -- parse the remaining tags
   local name = way:get_value_by_key("name")
@@ -443,7 +449,7 @@ function way_function (way, result)
   end
 
   if has_ref then
-    result.ref = ref
+    result.ref = canonicalizeStringList(ref, ";")
   end
 
   if has_pronunciation then
@@ -496,18 +502,21 @@ function way_function (way, result)
   if obey_oneway then
     if oneway == "-1" then
       result.forward_mode = mode.inaccessible
+
+      local is_forward = false
+      local destination = get_destination(way, is_forward)
+      result.destinations = canonicalizeStringList(destination, ",")
     elseif oneway == "yes" or
     oneway == "1" or
     oneway == "true" or
     junction == "roundabout" or
     (highway == "motorway" and oneway ~= "no") then
+
       result.backward_mode = mode.inaccessible
 
-      -- If we're on a oneway and there is no ref tag, re-use destination tag as ref.
-      local destination = get_destination(way)
-      local has_destination = destination and "" ~= destination
-
-      result.destinations = destination
+      local is_forward = true
+      local destination = get_destination(way, is_forward)
+      result.destinations = canonicalizeStringList(destination, ",")
     end
   end
 
@@ -565,7 +574,7 @@ function way_function (way, result)
 
   -- scale speeds to get better avg driving times
   if result.forward_speed > 0 then
-    local scaled_speed = result.forward_speed*speed_reduction + 11
+    local scaled_speed = result.forward_speed * speed_reduction
     local penalized_speed = math.huge
     if service and service ~= "" and service_speeds[service] then
       penalized_speed = service_speeds[service]
@@ -576,7 +585,7 @@ function way_function (way, result)
   end
 
   if result.backward_speed > 0 then
-    local scaled_speed = result.backward_speed*speed_reduction + 11
+    local scaled_speed = result.backward_speed * speed_reduction
     local penalized_speed = math.huge
     if service and service ~= "" and service_speeds[service]then
       penalized_speed = service_speeds[service]
