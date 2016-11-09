@@ -17,17 +17,13 @@ Example with andorra map and car.lua profile.
 Run these commands.
 
 1. To create the docker image 
-
-` sudo docker build -t osrm .`
+` sudo docker build -t osrm . `
 2. To build and run the container in daemon mode 
-
 ` sudo docker run -d -p 5000:5000 --name osrmrun -v $(pwd)/data:/opt/osrm/data -v $(pwd)/profile:/opt/osrm/profile osrm` 
 3. To start container 
-
-` sudo docker start osrmrun` 
+` sudo docker start osrmrun ` 
 4. To stop container 
-
-` sudo docker stop osrmrun` 
+` sudo docker stop osrmrun ` 
 
 ## Container
 
