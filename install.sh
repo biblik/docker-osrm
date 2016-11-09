@@ -4,11 +4,15 @@
 
 export PROFILE_LUA=$(find /opt/osrm/profile/ -type f -name '*.lua')
 export DATA_OSM_PBF=$(find /opt/osrm/data/ -type f -name '*.pbf')
-
 export DATA_OSM_OSRM=$(find /opt/osrm/data/ -type f -name '*.osrm')
 
-if [ ! -f $DATA_OSM_OSRM ]
-	then
+echo $PROFILE_LUA
+echo $DATA_OSM_PBF
+echo $DATA_OSM_OSRM
+
+if [ ! -f "$DATA_OSM_OSRM" ]
+then
+	echo "Compilation of PBF files"
 	echo $PROFILE_LUA
 	echo $DATA_OSM_PBF
 
@@ -25,6 +29,8 @@ if [ ! -f $DATA_OSM_OSRM ]
 
 	./osrm-contract $DATA_OSM_OSRM
 fi
+
+cd /opt/osrm/osrm-backend/build
 
 export DATA_OSM_OSRM=$(find /opt/osrm/data/ -type f -name '*.osrm')
 
