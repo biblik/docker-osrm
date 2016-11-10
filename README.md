@@ -2,18 +2,26 @@
 
 {work in progress}
 
+#PREREQUISITES
+
+You need to have docker installed on your machine. Visit [docker page](https://docs.docker.com/engine/installation/linux/ubuntulinux/) for installation.
+
 #INTRODUCTION
 
 This is a docker installation for osrm.
 
-Example with andorra map and car.lua profile.
+This installation comes with [Andorra map](http://download.geofabrik.de/europe/andorra-latest.osm.pbf) and [*car.lua*](https://github.com/Project-OSRM/osrm-backend/tree/master/profiles) profile.
 
-#RUNNING
+#BUILDING
 
-##Command line
+## Build and run the container
 
-###Linux
-
+######First
+Clone the git repository and open a terminal in this repository.
+######Secondly
+If you want to mount an OSRM server with an other country (instead of Andorra), you need to put the correct **pbf** file into data folder (and remove 
+*andorra-latest.osm.pbf*). Visit [geofabrik](http://download.geofabrik.de/europe.html) to select your desire map.
+######Thirdly
 Run these commands.
 
 1. To create the docker image  
@@ -25,12 +33,15 @@ Run these commands.
 4. To stop container  
 ` sudo docker stop osrmrun `
 
-## Container
-
-1. To enter in the container  
+## Enter into the container
+ 
 ` sudo docker run -it -p 5000:5000 --name osrmrun -v $(pwd)/data:/opt/osrm/data -v $(pwd)/profile:/opt/osrm/profile osrm bash`
+
+#RUNNING
 
 ## Request for a distance matrix ##
 
-In a browser, enter the following url  
+In a browser, enter the following url :
 ` http://localhost:5000/table/v1/car/1.52194,42.50630;1.73399,42.54356`
+
+It's a test distance matrix with two points from Andorra.
