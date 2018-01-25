@@ -2,26 +2,26 @@
 
 {work in progress}
 
-#PREREQUISITES
+# PREREQUISITES
 
 You need to have docker installed on your machine. Visit [docker page](https://docs.docker.com/engine/installation/linux/ubuntulinux/) for installation.
 
-#INTRODUCTION
+# INTRODUCTION
 
 This is a docker installation for osrm.
 
 This installation comes with [Andorra map](http://download.geofabrik.de/europe/andorra-latest.osm.pbf) and [*car.lua*](https://github.com/Project-OSRM/osrm-backend/tree/master/profiles) profile.
 
-#BUILDING
+# BUILDING
 
 ## Build and run the container
 
-######First
+#### First
 Clone the git repository and open a terminal in this repository.
-######Secondly
+#### Secondly
 If you want to mount an OSRM server with an other country (instead of Andorra), you need to put the correct **pbf** file into data folder (and remove 
 *andorra-latest.osm.pbf*). Visit [geofabrik](http://download.geofabrik.de/europe.html) to select your desire map.
-######Thirdly
+#### Thirdly
 Run these commands.
 
 1. To create the docker image  
@@ -37,7 +37,7 @@ Run these commands.
  
 ` sudo docker run -it -p 5000:5000 --name osrmrun -v $(pwd)/data:/opt/osrm/data -v $(pwd)/profile:/opt/osrm/profile osrm bash`
 
-#RUNNING
+# RUNNING
 
 ## Request for a distance matrix ##
 
